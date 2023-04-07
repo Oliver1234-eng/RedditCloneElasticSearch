@@ -19,16 +19,12 @@ public class Report {
     @Column(name = "reportReason", nullable = false)
     private String reportReason;
 
-    @PastOrPresent
-    @Column(name = "timestamp", nullable = false)
-    private LocalDate timestamp;
-
     @AssertFalse
     @Column(name = "accepted", nullable = false)
     private Boolean accepted;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_username")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -57,14 +53,6 @@ public class Report {
 
     public void setReportReason(String reportReason) {
         this.reportReason = reportReason;
-    }
-
-    public LocalDate getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Boolean getAccepted() {
@@ -121,7 +109,6 @@ public class Report {
         return "Report{" +
                 "id=" + id +
                 ", reportReason='" + reportReason + '\'' +
-                ", timestamp=" + timestamp +
                 ", accepted=" + accepted +
                 '}';
     }

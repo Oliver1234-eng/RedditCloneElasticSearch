@@ -14,10 +14,10 @@ import java.util.Set;
 @Table(name = "user")
 public class User {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Id
     @NotBlank(message = "Username cannot be null")
     @Column(name = "username", nullable = false)
     private String username;
@@ -34,13 +34,12 @@ public class User {
     @Column(name = "avatar", nullable = false)
     private String avatar;
 
-    @PastOrPresent
-    @Column(name = "registrationDate", nullable = false)
-    private LocalDate registrationDate;
-
     @AssertFalse
     @Column(name = "isBanned", nullable = false)
     private Boolean isBanned;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Community> communities = new HashSet<Community>();
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Reaction> reactions = new HashSet<Reaction>();
@@ -54,9 +53,6 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Report> reports = new HashSet<Report>();
 
-    @ManyToMany(mappedBy = "users")
-    private Set<Community> communities = new HashSet<Community>();
-
     public User() {
         super();
     }
@@ -67,7 +63,6 @@ public class User {
         this.password = password;
         this.email = email;
         this.avatar = avatar;
-        this.registrationDate = registrationDate;
         this.isBanned = isBanned;
     }
 
@@ -111,20 +106,20 @@ public class User {
         this.avatar = avatar;
     }
 
-    public LocalDate getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDate registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
     public Boolean getBanned() {
         return isBanned;
     }
 
     public void setBanned(Boolean banned) {
         isBanned = banned;
+    }
+
+    public Set<Community> getCommunities() {
+        return communities;
+    }
+
+    public void setCommunities(Set<Community> communities) {
+        this.communities = communities;
     }
 
     public Set<Reaction> getReactions() {
@@ -159,12 +154,14 @@ public class User {
         this.reports = reports;
     }
 
-    public Set<Community> getCommunities() {
-        return communities;
+    public void addCommunity(Community community) {
+        communities.add(community);
+        community.setUser(this);
     }
 
-    public void setCommunities(Set<Community> communities) {
-        this.communities = communities;
+    public void removeCommunity(Community community) {
+        communities.remove(community);
+        community.setUser(null);
     }
 
     public void addReaction(Reaction reaction) {
@@ -235,7 +232,6 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", avatar='" + avatar + '\'' +
-                ", registrationDate=" + registrationDate +
                 ", isBanned=" + isBanned +
                 '}';
     }

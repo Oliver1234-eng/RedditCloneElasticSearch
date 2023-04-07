@@ -20,16 +20,12 @@ public class Comment {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @PastOrPresent
-    @Column(name = "timestamp", nullable = false)
-    private LocalDate timestamp;
-
     @AssertFalse
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_username")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -60,14 +56,6 @@ public class Comment {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public LocalDate getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Boolean getDeleted() {
@@ -150,7 +138,6 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", text='" + text + '\'' +
-                ", timestamp=" + timestamp +
                 ", isDeleted=" + isDeleted +
                 '}';
     }

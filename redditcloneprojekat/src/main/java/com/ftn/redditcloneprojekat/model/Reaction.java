@@ -20,12 +20,8 @@ public class Reaction {
     @Column(name = "type", nullable = false)
     private String type;
 
-    @PastOrPresent
-    @Column(name = "timestamp", nullable = false)
-    private LocalDate timestamp;
-
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_username")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -54,14 +50,6 @@ public class Reaction {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public LocalDate getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
     }
 
     public User getUser() {
@@ -108,7 +96,6 @@ public class Reaction {
         return "Reaction{" +
                 "id=" + id +
                 ", type='" + type + '\'' +
-                ", timestamp=" + timestamp +
                 '}';
     }
 }

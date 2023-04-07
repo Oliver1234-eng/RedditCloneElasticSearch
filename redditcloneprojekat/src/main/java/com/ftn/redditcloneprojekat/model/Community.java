@@ -24,10 +24,6 @@ public class Community {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @PastOrPresent
-    @Column(name = "creationDate", nullable = false)
-    private LocalDate creationDate;
-
     @NotBlank(message = "Rules cannot be null")
     @Column(name = "rules", nullable = false)
     private String rules;
@@ -40,12 +36,12 @@ public class Community {
     @Column(name = "suspendedReason", nullable = false)
     private String suspendedReason;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_username")
+    private User user;
+
     @OneToMany(mappedBy = "community", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<Post>();
-
-    @ManyToMany
-    @JoinTable(name = "moderating", joinColumns = @JoinColumn(name = "community_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    private Set<User> users = new HashSet<User>();
 
     public Community() {
 
@@ -75,14 +71,6 @@ public class Community {
         this.description = description;
     }
 
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
-    }
-
     public String getRules() {
         return rules;
     }
@@ -107,20 +95,20 @@ public class Community {
         this.suspendedReason = suspendedReason;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Set<Post> getPosts() {
         return posts;
     }
 
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     public void addPost(Post post) {
@@ -156,7 +144,6 @@ public class Community {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", creationDate='" + creationDate + '\'' +
                 ", rules='" + rules + '\'' +
                 ", isSuspended=" + isSuspended +
                 ", suspendedReason='" + suspendedReason + '\'' +

@@ -24,16 +24,12 @@ public class Post {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @PastOrPresent
-    @Column(name = "creationDate", nullable = false)
-    private LocalDate creationDate;
-
     @NotBlank(message = "Image path cannot be null")
     @Column(name = "imagePath", nullable = false)
     private String imagePath;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_username")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -79,14 +75,6 @@ public class Post {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public LocalDate getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDate creationDate) {
-        this.creationDate = creationDate;
     }
 
     public String getImagePath() {
@@ -198,7 +186,6 @@ public class Post {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
-                ", creationDate=" + creationDate +
                 ", imagePath='" + imagePath + '\'' +
                 '}';
     }

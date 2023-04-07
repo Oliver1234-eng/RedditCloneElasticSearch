@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="redditcloneprojekat:war">
+    <output-path>$PROJECT_DIR$/redditcloneprojekat/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>redditcloneprojekat</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="redditcloneprojekat-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="redditcloneprojekat:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/RedditCloneElasticSearch.iml" filepath="$PROJECT_DIR$/.idea/RedditCloneElasticSearch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/redditcloneprojekat/redditcloneprojekat.iml" filepath="$PROJECT_DIR$/redditcloneprojekat/redditcloneprojekat.iml" />
+    </modules>
+  </component>
+</project>

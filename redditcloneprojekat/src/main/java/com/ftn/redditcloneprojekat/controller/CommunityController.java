@@ -115,6 +115,10 @@ public class CommunityController {
 
         Community community = communityService.findOneWithPosts(communityId);
 
+        if (community == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
         Set<Post> posts = community.getPosts();
         List<PostDTO> postsDTO = new ArrayList<>();
 

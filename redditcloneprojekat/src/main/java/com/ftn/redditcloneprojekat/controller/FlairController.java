@@ -93,6 +93,10 @@ public class FlairController {
 
         Flair flair = flairService.findOneWithPosts(flairId);
 
+        if (flair == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
         Set<Post> posts = flair.getPosts();
         List<PostDTO> postsDTO = new ArrayList<>();
 

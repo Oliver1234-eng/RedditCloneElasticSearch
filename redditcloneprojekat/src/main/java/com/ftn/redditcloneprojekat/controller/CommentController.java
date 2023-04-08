@@ -116,7 +116,6 @@ public class CommentController {
         }
 
         Set<Reaction> reactions = comment.getReactions();
-
         List<ReactionDTO> reactionsDTO = new ArrayList<>();
 
         for (Reaction r : reactions) {
@@ -137,6 +136,10 @@ public class CommentController {
     public ResponseEntity<List<ReportDTO>> getCommentReports(@PathVariable Integer commentId) {
 
         Comment comment = commentService.findOneWithReports(commentId);
+
+        if (comment == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
 
         Set<Report> reports = comment.getReports();
         List<ReportDTO> reportsDTO = new ArrayList<>();

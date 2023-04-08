@@ -1,17 +1,30 @@
 package com.ftn.redditcloneprojekat.controller;
 
 import com.ftn.redditcloneprojekat.dto.*;
+import com.ftn.redditcloneprojekat.mapper.UserMapper;
 import com.ftn.redditcloneprojekat.model.*;
+import com.ftn.redditcloneprojekat.security.SecurityProperties;
+import com.ftn.redditcloneprojekat.security.TokenUtils;
 import com.ftn.redditcloneprojekat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -20,6 +33,21 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SecurityProperties securityProperties;
+
+    @Autowired
+    UserDetailsService userDetailsService;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    TokenUtils tokenUtils;
+
+    @Autowired
+    UserMapper userMapper;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -60,18 +88,32 @@ public class UserController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> saveUser(@RequestBody @Validated UserDTO newUser) {
 
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
-        user.setEmail(userDTO.getEmail());
-        user.setAvatar(userDTO.getAvatar());
-        user.setBanned(userDTO.getBanned());
+        User createdUser = userService.createUser(newUser);
 
-        user = userService.save(user);
-        return new ResponseEntity<>(new UserDTO(user), HttpStatus.CREATED);
+        if(createdUser == null){
+            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+        }
+        UserDTO userDTO = new UserDTO(createdUser);
+
+        return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
     }
+
+//    @PostMapping(consumes = "application/json")
+//    public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
+//
+//        User user = new User();
+//        user.setUsername(userDTO.getUsername());
+//        user.setPassword(securityProperties.createPasswordEncoder().encode(userDTO.getPassword()));
+//        //user.setPassword(userDTO.getPassword());
+//        user.setEmail(userDTO.getEmail());
+//        user.setAvatar(userDTO.getAvatar());
+//        user.setBanned(userDTO.getBanned());
+//
+//        user = userService.save(user);
+//        return new ResponseEntity<>(new UserDTO(user), HttpStatus.CREATED);
+//    }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
@@ -83,7 +125,8 @@ public class UserController {
         }
 
         user.setUsername(userDTO.getUsername());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(securityProperties.createPasswordEncoder().encode(userDTO.getPassword()));
+        //user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
         user.setAvatar(userDTO.getAvatar());
         user.setBanned(userDTO.getBanned());
@@ -102,6 +145,34 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody UserDTO userDto) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userDto.getUsername());
+            return ResponseEntity.ok(tokenUtils.generateToken(userDetails));
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+
+        UserDTO userDTO = userService.changePassword(currentUserName, passwordChangeDTO.getOldPassword(), passwordChangeDTO.getNewPassword());
+
+        if (userDTO != null) {
+            return ResponseEntity.ok("Password changed successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while changing password.");
         }
     }
 
@@ -157,6 +228,10 @@ public class UserController {
 
         User user = userService.findOneWithCommunities(userUsername);
 
+        if (user == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
         Set<Community> communities = user.getCommunities();
         List<CommunityDTO> communitiesDTO = new ArrayList<>();
 
@@ -181,6 +256,10 @@ public class UserController {
 
         User user = userService.findOneWithReactions(userUsername);
 
+        if (user == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
         Set<Reaction> reactions = user.getReactions();
         List<ReactionDTO> reactionsDTO = new ArrayList<>();
 
@@ -202,6 +281,10 @@ public class UserController {
     public ResponseEntity<List<PostDTO>> getUserPosts(@PathVariable String userUsername) {
 
         User user = userService.findOneWithPosts(userUsername);
+
+        if (user == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
 
         Set<Post> posts = user.getPosts();
         List<PostDTO> postsDTO = new ArrayList<>();
@@ -225,6 +308,10 @@ public class UserController {
     public ResponseEntity<List<CommentDTO>> getUserComments(@PathVariable String userUsername) {
 
         User user = userService.findOneWithComments(userUsername);
+
+        if (user == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
 
         Set<Comment> comments = user.getComments();
         List<CommentDTO> commentsDTO = new ArrayList<>();
@@ -271,6 +358,10 @@ public class UserController {
     public ResponseEntity<List<ReportDTO>> getUserReports(@PathVariable String userUsername) {
 
         User user = userService.findOneWithReports(userUsername);
+
+        if (user == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
 
         Set<Report> reports = user.getReports();
         List<ReportDTO> reportsDTO = new ArrayList<>();

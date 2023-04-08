@@ -2,11 +2,18 @@ package com.ftn.redditcloneprojekat.dto;
 
 import com.ftn.redditcloneprojekat.model.User;
 
+import javax.validation.constraints.NotBlank;
+
 public class UserDTO {
 
     private Integer id;
+
+    @NotBlank
     private String username;
+
+    @NotBlank
     private String password;
+
     private String email;
     private String avatar;
     private Boolean isBanned;

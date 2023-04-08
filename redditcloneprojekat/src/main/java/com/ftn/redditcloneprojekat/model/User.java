@@ -19,7 +19,7 @@ public class User {
 
     @Id
     @NotBlank(message = "Username cannot be null")
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @NotBlank(message = "Password cannot be null")
@@ -37,6 +37,10 @@ public class User {
     @AssertFalse
     @Column(name = "isBanned", nullable = false)
     private Boolean isBanned;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Roles role;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Community> communities = new HashSet<Community>();
@@ -57,13 +61,14 @@ public class User {
         super();
     }
 
-    public User(Integer id, String username, String password, String email, String avatar, LocalDate registrationDate, Boolean isBanned) {
+    public User(Integer id, String username, String password, String email, String avatar, LocalDate registrationDate, Boolean isBanned, Roles role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.avatar = avatar;
         this.isBanned = isBanned;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -112,6 +117,14 @@ public class User {
 
     public void setBanned(Boolean banned) {
         isBanned = banned;
+    }
+
+    public Roles getRole() {
+        return role;
+    }
+
+    public void setRole(Roles role) {
+        this.role = role;
     }
 
     public Set<Community> getCommunities() {

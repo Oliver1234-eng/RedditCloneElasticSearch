@@ -1,6 +1,9 @@
-insert into user (avatar, email, is_banned, password, username) values ('nekaSlika', 'email@email.com', false, 'lozinka1', 'pera');
-insert into user (avatar, email, is_banned, password, username) values ('nekaSlika', 'email@email.com', false, 'lozinka2', 'mika');
-insert into user (avatar, email, is_banned, password, username) values ('nekaSlika', 'email@email.com', false, 'lozinka3', 'zika');
+insert into user (avatar, email, is_banned, password, username, role) values ('nekaSlika', 'email@email.com', false, '$2a$10$APZmkzJfSiMIH0RzO8fb5eOZ0QCe3273LLLDgYzzhJxB7XA5RDPHy','pera', 'USER');
+insert into user (avatar, email, is_banned, password, username, role) values ('nekaSlika', 'email@email.com', false, '$2a$10$APZmkzJfSiMIH0RzO8fb5eOZ0QCe3273LLLDgYzzhJxB7XA5RDPHy', 'mika', 'USER');
+insert into user (avatar, email, is_banned, password, username, role) values ('nekaSlika', 'email@email.com', false, '$2a$10$APZmkzJfSiMIH0RzO8fb5eOZ0QCe3273LLLDgYzzhJxB7XA5RDPHy', 'zika', 'USER');
+
+/*INSERT INTO user_login VALUES (1, '$2a$10$WyGU0850Gt6l9niernBpb.58pCPz8XXEaI4qvOyj5rdEYIygCat/u', 'USER', 'user1');
+INSERT INTO user_login VALUES (2, '$2a$10$APZmkzJfSiMIH0RzO8fb5eOZ0QCe3273LLLDgYzzhJxB7XA5RDPHy', 'USER', 'user2'); */
 
 insert into flair (name) values ('imeTaga1');
 insert into flair (name) values ('imeTaga2');

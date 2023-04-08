@@ -117,6 +117,10 @@ public class PostController {
 
         Post post = postService.findOneWithReactions(postId);
 
+        if (post == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
         Set<Reaction> reactions = post.getReactions();
         List<ReactionDTO> reactionsDTO = new ArrayList<>();
 
@@ -139,6 +143,10 @@ public class PostController {
 
         Post post = postService.findOneWithComments(postId);
 
+        if (post == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
         Set<Comment> comments = post.getComments();
         List<CommentDTO> commentsDTO = new ArrayList<>();
 
@@ -160,6 +168,10 @@ public class PostController {
     public ResponseEntity<List<ReportDTO>> getPostReports(@PathVariable Integer postId) {
 
         Post post = postService.findOneWithReports(postId);
+
+        if (post == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
 
         Set<Report> reports = post.getReports();
         List<ReportDTO> reportsDTO = new ArrayList<>();

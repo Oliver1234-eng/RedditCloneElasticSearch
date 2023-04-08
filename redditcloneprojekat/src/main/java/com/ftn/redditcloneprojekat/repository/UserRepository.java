@@ -2,16 +2,21 @@ package com.ftn.redditcloneprojekat.repository;
 
 import com.ftn.redditcloneprojekat.model.Post;
 import com.ftn.redditcloneprojekat.model.User;
+import com.ftn.redditcloneprojekat.model.UserLogin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
+    @Query(nativeQuery = true, value = "select * from user where username = ?")
     public User findOneByUsername(String username);
+
+    Optional<User> findFirstByUsername(String username);
 
 //    @Query("select u from User u join fetch u.reactions e where u.id =?1")
 //    public User findOneWithReactions(Integer userId);

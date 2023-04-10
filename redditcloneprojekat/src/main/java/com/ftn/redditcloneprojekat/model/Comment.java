@@ -32,10 +32,10 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToMany(mappedBy = "comment",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Reaction> reactions = new HashSet<Reaction>();
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Report> reports = new HashSet<Report>();
 
     public Comment() {

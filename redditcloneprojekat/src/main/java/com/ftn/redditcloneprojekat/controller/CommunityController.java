@@ -12,6 +12,8 @@ import com.ftn.redditcloneprojekat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -56,11 +58,10 @@ public class CommunityController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<CommunityDTO> saveCommunity(@RequestBody CommunityDTO communityDTO) {
 
-        if (communityDTO.getUser() == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
 
-        User user = userService.findOneWithCommunities(communityDTO.getUser().getUsername());
+        User user = userService.findOneWithCommunitiesToken(currentUserName);
 
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -77,6 +78,31 @@ public class CommunityController {
         community = communityService.save(community);
         return new ResponseEntity<>(new CommunityDTO(community), HttpStatus.CREATED);
     }
+
+//    @PostMapping(consumes = "application/json")
+//    public ResponseEntity<CommunityDTO> saveCommunity(@RequestBody CommunityDTO communityDTO) {
+//
+//        if (communityDTO.getUser() == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        User user = userService.findOneWithCommunities(communityDTO.getUser().getUsername());
+//
+//        if (user == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Community community = new Community();
+//        community.setName(communityDTO.getName());
+//        community.setDescription(communityDTO.getDescription());
+//        community.setRules(communityDTO.getRules());
+//        community.setSuspended(communityDTO.getSuspended());
+//        community.setSuspendedReason(communityDTO.getSuspendedReason());
+//        community.setUser(user);
+//
+//        community = communityService.save(community);
+//        return new ResponseEntity<>(new CommunityDTO(community), HttpStatus.CREATED);
+//    }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<CommunityDTO> updateCommunity(@RequestBody CommunityDTO communityDTO) {

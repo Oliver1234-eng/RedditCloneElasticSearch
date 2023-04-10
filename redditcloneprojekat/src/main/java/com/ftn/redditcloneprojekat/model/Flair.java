@@ -17,7 +17,7 @@ public class Flair {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "flair",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "flair",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<Post>();
 
     public Flair() {

@@ -2,10 +2,13 @@ package com.ftn.redditcloneprojekat.controller;
 
 import com.ftn.redditcloneprojekat.dto.*;
 import com.ftn.redditcloneprojekat.model.*;
+import com.ftn.redditcloneprojekat.security.TokenUtils;
 import com.ftn.redditcloneprojekat.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,6 +30,9 @@ public class PostController {
 
     @Autowired
     private CommunityService communityService;
+
+    @Autowired
+    TokenUtils tokenUtils;
 
     @GetMapping
     public ResponseEntity<List<PostDTO>> getPosts() {
@@ -56,11 +62,14 @@ public class PostController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
 
-        if (postDTO.getUser() == null || postDTO.getFlair() == null || postDTO.getCommunity() == null) {
+        if (postDTO.getFlair() == null || postDTO.getCommunity() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.findOneWithPosts(postDTO.getUser().getUsername());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+
+        User user = userService.findOneWithPostsToken(currentUserName);
         Flair flair = flairService.findOneWithPosts(postDTO.getFlair().getId());
         Community community = communityService.findOneWithPosts(postDTO.getCommunity().getId());
 
@@ -82,6 +91,36 @@ public class PostController {
         post = postService.save(post);
         return new ResponseEntity<>(new PostDTO(post), HttpStatus.CREATED);
     }
+
+//    @PostMapping(consumes = "application/json")
+//    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
+//
+//        if (postDTO.getUser() == null || postDTO.getFlair() == null || postDTO.getCommunity() == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        User user = userService.findOneWithPosts(postDTO.getUser().getUsername());
+//        Flair flair = flairService.findOneWithPosts(postDTO.getFlair().getId());
+//        Community community = communityService.findOneWithPosts(postDTO.getCommunity().getId());
+//
+//        if (user == null || flair == null || community == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Post post = new Post();
+//        post.setTitle(postDTO.getTitle());
+//        post.setText(postDTO.getText());
+//        post.setImagePath(postDTO.getImagePath());
+//        post.setUser(user);
+//        post.setFlair(flair);
+//        post.setCommunity(community);
+//        user.addPost(post);
+//        flair.addPost(post);
+//        community.addPost(post);
+//
+//        post = postService.save(post);
+//        return new ResponseEntity<>(new PostDTO(post), HttpStatus.CREATED);
+//    }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<PostDTO> updatePost(@RequestBody PostDTO postDTO) {
@@ -131,6 +170,31 @@ public class PostController {
             reactionDTO.setUser(new UserDTO(r.getUser()));
             reactionDTO.setPost(new PostDTO(post));
             reactionDTO.setComment(new CommentDTO(r.getComment()));
+
+            reactionsDTO.add(reactionDTO);
+        }
+
+        return new ResponseEntity<>(reactionsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{postId}/reactionsOnPost")
+    public ResponseEntity<List<ReactionOnPostDTO>> getPostReactionsOnPost(@PathVariable Integer postId) {
+
+        Post post = postService.findOneWithReactionsOnPost(postId);
+
+        if (post == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
+        Set<ReactionOnPost> reactions = post.getReactionsOnPost();
+        List<ReactionOnPostDTO> reactionsDTO = new ArrayList<>();
+
+        for (ReactionOnPost r : reactions) {
+            ReactionOnPostDTO reactionDTO = new ReactionOnPostDTO();
+            reactionDTO.setId(r.getId());
+            reactionDTO.setReactionType(r.getReactionType());
+            reactionDTO.setUser(new UserDTO(r.getUser()));
+            reactionDTO.setPost(new PostDTO(post));
 
             reactionsDTO.add(reactionDTO);
         }

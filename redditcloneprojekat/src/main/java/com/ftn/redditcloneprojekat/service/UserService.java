@@ -28,16 +28,15 @@ public class UserService {
     @Autowired
     private SecurityProperties securityProperties;
 
-    @Autowired
-    private UserMapper userMapper;
+//    @Autowired
+//    private UserMapper userMapper;
 
     private final TokenUtils tokenUtils;
 
     @Autowired
-    public UserService(UserRepository userRepository, TokenUtils tokenUtils, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, TokenUtils tokenUtils) {
         this.userRepository = userRepository;
         this.tokenUtils = tokenUtils;
-        this.userMapper = userMapper;
     }
 
     public User findOne(Integer id) {
@@ -88,6 +87,14 @@ public class UserService {
         return userRepository.findOneWithReactions(userUsername);
     }
 
+    public User findOneWithReactionsOnPost(String userUsername) {
+        return userRepository.findOneWithReactionsOnPost(userUsername);
+    }
+
+    public User findOneWithReactionsOnPostToken(String currentUserName) {
+        return userRepository.findByUsername(currentUserName);
+    }
+
     public User findOneWithComments(String userUsername) {
         return userRepository.findOneWithComments(userUsername);
     }
@@ -98,6 +105,18 @@ public class UserService {
 
     public User findOneWithPosts(String userUsername) {
         return userRepository.findOneWithPosts(userUsername);
+    }
+
+    public User findOneWithPostsToken(String currentUserName) {
+        return userRepository.findByUsername(currentUserName);
+    }
+
+    public User findOneWithCommunitiesToken(String currentUserName) {
+        return userRepository.findByUsername(currentUserName);
+    }
+
+    public User findOneWithCommentsToken(String currentUserName) {
+        return userRepository.findByUsername(currentUserName);
     }
 
     public User findOneWithCommunities(String userUsername) {

@@ -46,8 +46,8 @@ public class UserController {
     @Autowired
     TokenUtils tokenUtils;
 
-    @Autowired
-    UserMapper userMapper;
+//    @Autowired
+//    UserMapper userMapper;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
@@ -75,10 +75,22 @@ public class UserController {
         return new ResponseEntity<>(usersDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Integer id) {
+//    @GetMapping(value = "/{id}")
+//    public ResponseEntity<UserDTO> getUser(@PathVariable Integer id) {
+//
+//        User user = userService.findOne(id);
+//
+//        if (user == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//
+//        return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+//    }
 
-        User user = userService.findOne(id);
+    @GetMapping(value = "/{username}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
+
+        User user = userService.findOneByUsername(username);
 
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -176,15 +188,15 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/findUsername")
-    public ResponseEntity<UserDTO> getUserByUsername(@RequestParam String username) {
-
-        User user = userService.findByUsername(username);
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
-    }
+//    @GetMapping(value = "/findUsername")
+//    public ResponseEntity<UserDTO> getUserByUsername(@RequestParam String username) {
+//
+//        User user = userService.findByUsername(username);
+//        if (user == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
+//    }
 
     @GetMapping(value = "/findEmail")
     public ResponseEntity<List<UserDTO>> getUsersByEmail(@RequestParam String email) {
@@ -270,6 +282,31 @@ public class UserController {
             reactionDTO.setUser(new UserDTO(r.getUser()));
             reactionDTO.setPost(new PostDTO(r.getPost()));
             reactionDTO.setComment(new CommentDTO(r.getComment()));
+
+            reactionsDTO.add(reactionDTO);
+        }
+
+        return new ResponseEntity<>(reactionsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{userUsername}/reactionsOnPost")
+    public ResponseEntity<List<ReactionOnPostDTO>> getUserReactionsOnPost(@PathVariable String userUsername) {
+
+        User user = userService.findOneWithReactionsOnPost(userUsername);
+
+        if (user == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
+
+        Set<ReactionOnPost> reactions = user.getReactionsOnPost();
+        List<ReactionOnPostDTO> reactionsDTO = new ArrayList<>();
+
+        for (ReactionOnPost r : reactions) {
+            ReactionOnPostDTO reactionDTO = new ReactionOnPostDTO();
+            reactionDTO.setId(r.getId());
+            reactionDTO.setReactionType(r.getReactionType());
+            reactionDTO.setUser(new UserDTO(r.getUser()));
+            reactionDTO.setPost(new PostDTO(r.getPost()));
 
             reactionsDTO.add(reactionDTO);
         }

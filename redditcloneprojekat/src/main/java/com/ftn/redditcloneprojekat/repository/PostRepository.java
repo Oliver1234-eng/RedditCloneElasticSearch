@@ -14,4 +14,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("select p from Post p join fetch p.reactions e where p.id =?1")
     public Post findOneWithReactions(Integer postId);
+
+//    @Query("select p from Post p join fetch p.reactionsOnPost e where p.id =?1")
+//    public Post findOneWithReactionsOnPost(Integer postId);
+
+    @Query("select p from Post p left join fetch p.reactionsOnPost e where p.id = ?1")
+    public Post findOneWithReactionsOnPost(Integer postId);
 }

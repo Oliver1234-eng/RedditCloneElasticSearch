@@ -42,19 +42,22 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Community> communities = new HashSet<Community>();
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Reaction> reactions = new HashSet<Reaction>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<ReactionOnPost> reactionsOnPost = new HashSet<ReactionOnPost>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<Post>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Comment> comments = new HashSet<Comment>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Report> reports = new HashSet<Report>();
 
     public User() {
@@ -143,6 +146,14 @@ public class User {
         this.reactions = reactions;
     }
 
+    public Set<ReactionOnPost> getReactionsOnPost() {
+        return reactionsOnPost;
+    }
+
+    public void setReactionsOnPost(Set<ReactionOnPost> reactionsOnPost) {
+        this.reactionsOnPost = reactionsOnPost;
+    }
+
     public Set<Post> getPosts() {
         return posts;
     }
@@ -185,6 +196,16 @@ public class User {
     public void removeReaction(Reaction reaction) {
         reactions.remove(reaction);
         reaction.setUser(null);
+    }
+
+    public void addReactionOnPost(ReactionOnPost reactionOnPost) {
+        reactionsOnPost.add(reactionOnPost);
+        reactionOnPost.setUser(this);
+    }
+
+    public void removeReaction(ReactionOnPost reactionOnPost) {
+        reactionsOnPost.remove(reactionOnPost);
+        reactionOnPost.setUser(null);
     }
 
     public void addPost(Post post) {

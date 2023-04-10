@@ -18,6 +18,14 @@ public class PostDTO {
     private FlairDTO flair;
     private CommunityDTO community;
 
+//    private Integer id;
+//    private String title;
+//    private String text;
+//    private String imagePath;
+//    private UserDTO user;
+//    private FlairDTO flair;
+//    private CommunityDTO community;
+
     public PostDTO() {
 
     }
@@ -28,8 +36,12 @@ public class PostDTO {
         text = post.getText();
         imagePath = post.getImagePath();
         user = new UserDTO(post.getUser());
-        flair = new FlairDTO(post.getFlair());
-        community = new CommunityDTO(post.getCommunity());
+        flair = new FlairDTO(post.getFlair().getId());
+        community = new CommunityDTO(post.getCommunity().getId());
+    }
+
+    public PostDTO(Integer id) {
+        this.id = id;
     }
 
     public Integer getId() {
@@ -87,4 +99,20 @@ public class PostDTO {
     public void setCommunity(CommunityDTO community) {
         this.community = community;
     }
+
+    //    public FlairDTO getFlair() {
+//        return flair;
+//    }
+//
+//    public void setFlair(FlairDTO flair) {
+//        this.flair = flair;
+//    }
+//
+//    public CommunityDTO getCommunity() {
+//        return community;
+//    }
+//
+//    public void setCommunity(CommunityDTO community) {
+//        this.community = community;
+//    }
 }

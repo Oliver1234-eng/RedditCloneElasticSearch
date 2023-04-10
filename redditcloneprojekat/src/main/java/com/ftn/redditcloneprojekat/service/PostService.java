@@ -41,6 +41,10 @@ public class PostService {
         return postRepository.findOneWithReactions(postId);
     }
 
+    public Post findOneWithReactionsOnPost(Integer postId) {
+        return postRepository.findOneWithReactionsOnPost(postId);
+    }
+
     public Post findOneWithComments(Integer postId) {
         return postRepository.findOneWithComments(postId);
     }

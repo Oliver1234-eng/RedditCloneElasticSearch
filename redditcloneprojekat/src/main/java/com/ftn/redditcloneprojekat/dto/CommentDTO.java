@@ -2,12 +2,6 @@ package com.ftn.redditcloneprojekat.dto;
 
 import com.ftn.redditcloneprojekat.model.Comment;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.time.LocalDate;
-
 public class CommentDTO {
 
     private Integer id;
@@ -15,6 +9,12 @@ public class CommentDTO {
     private Boolean isDeleted;
     private UserDTO user;
     private PostDTO post;
+
+//    private Integer id;
+//    private String text;
+//    private Boolean isDeleted;
+//    private UserDTO user;
+//    private PostDTO post;
 
     public CommentDTO() {
 
@@ -25,7 +25,7 @@ public class CommentDTO {
         text = comment.getText();
         isDeleted = comment.getDeleted();
         user = new UserDTO(comment.getUser());
-        post = new PostDTO(comment.getPost());
+        post = new PostDTO(comment.getPost().getId());
     }
 
     public Integer getId() {

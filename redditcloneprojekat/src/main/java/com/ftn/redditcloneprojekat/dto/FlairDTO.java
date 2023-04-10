@@ -21,6 +21,10 @@ public class FlairDTO {
         this.name = name;
     }
 
+    public FlairDTO(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }

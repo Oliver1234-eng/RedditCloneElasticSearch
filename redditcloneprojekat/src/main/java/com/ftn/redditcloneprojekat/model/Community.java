@@ -3,10 +3,8 @@ package com.ftn.redditcloneprojekat.model;
 import javax.persistence.*;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PastOrPresent;
 import java.util.HashSet;
 import java.util.Set;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "community")
@@ -40,7 +38,7 @@ public class Community {
     @JoinColumn(name = "user_username")
     private User user;
 
-    @OneToMany(mappedBy = "community", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "community", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Post> posts = new HashSet<Post>();
 
     public Community() {

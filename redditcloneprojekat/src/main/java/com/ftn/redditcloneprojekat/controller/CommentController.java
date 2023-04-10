@@ -8,6 +8,8 @@ import com.ftn.redditcloneprojekat.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -55,11 +57,14 @@ public class CommentController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<CommentDTO> createComment(@RequestBody CommentDTO commentDTO) {
 
-        if (commentDTO.getUser() == null || commentDTO.getPost() == null) {
+        if (commentDTO.getPost() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        User user = userService.findOneWithComments(commentDTO.getUser().getUsername());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+
+        User user = userService.findOneWithCommentsToken(currentUserName);
         Post post = postService.findOneWithComments(commentDTO.getPost().getId());
 
         if (user == null || post == null) {
@@ -77,6 +82,32 @@ public class CommentController {
         comment = commentService.save(comment);
         return new ResponseEntity<>(new CommentDTO(comment), HttpStatus.CREATED);
     }
+
+//    @PostMapping(consumes = "application/json")
+//    public ResponseEntity<CommentDTO> createComment(@RequestBody CommentDTO commentDTO) {
+//
+//        if (commentDTO.getUser() == null || commentDTO.getPost() == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        User user = userService.findOneWithComments(commentDTO.getUser().getUsername());
+//        Post post = postService.findOneWithComments(commentDTO.getPost().getId());
+//
+//        if (user == null || post == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Comment comment = new Comment();
+//        comment.setText(commentDTO.getText());
+//        comment.setDeleted(commentDTO.getDeleted());
+//        comment.setUser(user);
+//        comment.setPost(post);
+//        post.addComment(comment);
+//        user.addComment(comment);
+//
+//        comment = commentService.save(comment);
+//        return new ResponseEntity<>(new CommentDTO(comment), HttpStatus.CREATED);
+//    }
 
     @PutMapping(consumes = "application/json")
     public ResponseEntity<CommentDTO> updateComment(@RequestBody CommentDTO commentDTO) {

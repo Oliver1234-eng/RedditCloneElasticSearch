@@ -40,13 +40,16 @@ public class Post {
     @JoinColumn(name = "community_id")
     private Community community;
 
-    @OneToMany(mappedBy = "post",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Reaction> reactions = new HashSet<Reaction>();
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<ReactionOnPost> reactionsOnPost = new HashSet<ReactionOnPost>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Comment> comments = new HashSet<Comment>();
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Report> reports = new HashSet<Report>();
 
     public Post() {
@@ -117,6 +120,14 @@ public class Post {
         this.reactions = reactions;
     }
 
+    public Set<ReactionOnPost> getReactionsOnPost() {
+        return reactionsOnPost;
+    }
+
+    public void setReactionsOnPost(Set<ReactionOnPost> reactionsOnPost) {
+        this.reactionsOnPost = reactionsOnPost;
+    }
+
     public Set<Comment> getComments() {
         return comments;
     }
@@ -158,6 +169,16 @@ public class Post {
     public void removeReaction(Reaction reaction) {
         reactions.remove(reaction);
         reaction.setPost(null);
+    }
+
+    public void addReactionOnPost(ReactionOnPost reactionOnPost) {
+        reactionsOnPost.add(reactionOnPost);
+        reactionOnPost.setPost(this);
+    }
+
+    public void removeReactionOnPost(ReactionOnPost reactionOnPost) {
+        reactionsOnPost.remove(reactionOnPost);
+        reactionOnPost.setPost(null);
     }
 
     public void addComment(Comment comment) {

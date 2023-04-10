@@ -49,6 +49,10 @@ public class CommunityDTO {
         user = new UserDTO(community.getUser());
     }
 
+    public CommunityDTO(Integer id) {
+        this.id = id;
+    }
+
 //    public CommunityDTO(Community community) {
 //
 //    }

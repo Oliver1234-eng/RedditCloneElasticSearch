@@ -11,11 +11,9 @@ import java.time.LocalDate;
 
 public class CommunityDTO {
 
-    private Integer id;
     private String name;
     private String description;
     private String rules;
-    private Boolean isSuspended;
     private String suspendedReason;
     private UserDTO user;
 
@@ -41,29 +39,19 @@ public class CommunityDTO {
 //    }
 
     public CommunityDTO(Community community) {
-        id = community.getId();
         name = community.getName();
         description = community.getDescription();
         rules = community.getRules();
-        isSuspended = community.getSuspended();
         user = new UserDTO(community.getUser());
     }
 
-    public CommunityDTO(Integer id) {
-        this.id = id;
+    public CommunityDTO(String name) {
+        this.name = name;
     }
 
 //    public CommunityDTO(Community community) {
 //
 //    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -87,14 +75,6 @@ public class CommunityDTO {
 
     public void setRules(String rules) {
         this.rules = rules;
-    }
-
-    public Boolean getSuspended() {
-        return isSuspended;
-    }
-
-    public void setSuspended(Boolean suspended) {
-        isSuspended = suspended;
     }
 
     public String getSuspendedReason() {

@@ -10,11 +10,8 @@ import java.util.Set;
 public class Flair {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @NotBlank(message = "Name cannot be null")
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @OneToMany(mappedBy = "flair",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -22,14 +19,6 @@ public class Flair {
 
     public Flair() {
 
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -57,7 +46,7 @@ public class Flair {
             return false;
         }
         Flair f = (Flair) o;
-        return id != null && id.equals(f.getId());
+        return name != null && name.equals(f.getName());
     }
 
     @Override
@@ -78,7 +67,6 @@ public class Flair {
     @Override
     public String toString() {
         return "Flair{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
     }

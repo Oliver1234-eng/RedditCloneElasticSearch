@@ -159,8 +159,6 @@ public class UserService {
         newUser.setUsername(userDTO.getUsername());
         newUser.setPassword(securityProperties.createPasswordEncoder().encode(userDTO.getPassword()));
         newUser.setEmail(userDTO.getEmail());
-        newUser.setAvatar(userDTO.getAvatar());
-        newUser.setBanned(userDTO.getBanned());
         newUser.setRole(Roles.USER);
         newUser = userRepository.save(newUser);
 

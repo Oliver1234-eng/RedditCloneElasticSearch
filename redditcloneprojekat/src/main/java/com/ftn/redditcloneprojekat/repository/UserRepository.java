@@ -34,25 +34,25 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 //    @Query("select u from User u join fetch u.communities e where u.id =?1")
 //    public User findOneWithCommunities(Integer userId);
 
-    @Query("select u from User u join fetch u.reactions e where u.username =?1")
+    @Query("select u from User u left join fetch u.reactions e where u.username =?1")
     public User findOneWithReactions(String userUsername);
 
-    @Query("select u from User u join fetch u.reactionsOnPost e where u.username =?1")
+    @Query("select u from User u left join fetch u.reactionsOnPost e where u.username =?1")
     public User findOneWithReactionsOnPost(String userUsername);
 
-    @Query("select u from User u join fetch u.reports e where u.username =?1")
+    @Query("select u from User u left join fetch u.reports e where u.username =?1")
     public User findOneWithReports(String userUsername);
 
-    @Query("select u from User u join fetch u.comments e where u.username =?1")
+    @Query("select u from User u left join fetch u.comments e where u.username =?1")
     public User findOneWithComments(String userUsername);
 
-    @Query("select u from User u join fetch u.posts e where u.username =?1")
+    @Query("select u from User u left join fetch u.posts e where u.username =?1")
     public User findOneWithPosts(String userUsername);
 
     @Query("SELECT u FROM User u WHERE u.username = :username")
     User findByUsername(@Param("username") String username);
 
-    @Query("select u from User u join fetch u.communities e where u.username =?1")
+    @Query("select u from User u left join fetch u.communities e where u.username =?1")
     public User findOneWithCommunities(String userUsername);
 
     public List<User> findAll();

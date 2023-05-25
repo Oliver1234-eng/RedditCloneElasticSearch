@@ -43,10 +43,10 @@ public class CommunityController {
         return new ResponseEntity<>(communitiesDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<CommunityDTO> getCommunity(@PathVariable Integer id) {
+    @GetMapping(value = "/{name}")
+    public ResponseEntity<CommunityDTO> getCommunity(@PathVariable String name) {
 
-        Community community = communityService.findOne(id);
+        Community community = communityService.findOne(name);
 
         if (community == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -71,7 +71,6 @@ public class CommunityController {
         community.setName(communityDTO.getName());
         community.setDescription(communityDTO.getDescription());
         community.setRules(communityDTO.getRules());
-        community.setSuspended(communityDTO.getSuspended());
         community.setSuspendedReason(communityDTO.getSuspendedReason());
         community.setUser(user);
 
@@ -107,7 +106,7 @@ public class CommunityController {
     @PutMapping(consumes = "application/json")
     public ResponseEntity<CommunityDTO> updateCommunity(@RequestBody CommunityDTO communityDTO) {
 
-        Community community = communityService.findOne(communityDTO.getId());
+        Community community = communityService.findOne(communityDTO.getName());
 
         if (community == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -116,30 +115,29 @@ public class CommunityController {
         community.setName(communityDTO.getName());
         community.setDescription(communityDTO.getDescription());
         community.setRules(communityDTO.getRules());
-        community.setSuspended(communityDTO.getSuspended());
         community.setSuspendedReason(communityDTO.getSuspendedReason());
 
         community = communityService.save(community);
         return new ResponseEntity<>(new CommunityDTO(community), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteCommunity(@PathVariable Integer id) {
+    @DeleteMapping(value = "/{name}")
+    public ResponseEntity<Void> deleteCommunity(@PathVariable String name) {
 
-        Community community = communityService.findOne(id);
+        Community community = communityService.findOne(name);
 
         if (community != null) {
-            communityService.remove(id);
+            communityService.remove(name);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping(value = "/{communityId}/posts")
-    public ResponseEntity<List<PostDTO>> getCommunityPosts(@PathVariable Integer communityId) {
+    @GetMapping(value = "/{communityName}/posts")
+    public ResponseEntity<List<PostDTO>> getCommunityPosts(@PathVariable String communityName) {
 
-        Community community = communityService.findOneWithPosts(communityId);
+        Community community = communityService.findOneWithPosts(communityName);
 
         if (community == null) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
@@ -152,7 +150,6 @@ public class CommunityController {
             PostDTO postDTO = new PostDTO();
             postDTO.setId(p.getId());
             postDTO.setTitle(p.getTitle());
-            postDTO.setImagePath(p.getImagePath());
             postDTO.setUser(new UserDTO(p.getUser()));
             postDTO.setFlair(new FlairDTO(p.getFlair()));
             postDTO.setCommunity(new CommunityDTO(community));

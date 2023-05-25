@@ -6,7 +6,6 @@ public class CommentDTO {
 
     private Integer id;
     private String text;
-    private Boolean isDeleted;
     private UserDTO user;
     private PostDTO post;
 
@@ -23,7 +22,6 @@ public class CommentDTO {
     public CommentDTO(Comment comment) {
         id = comment.getId();
         text = comment.getText();
-        isDeleted = comment.getDeleted();
         user = new UserDTO(comment.getUser());
         post = new PostDTO(comment.getPost().getId());
     }
@@ -42,14 +40,6 @@ public class CommentDTO {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 
     public UserDTO getUser() {

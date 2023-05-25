@@ -38,10 +38,10 @@ public class FlairController {
         return new ResponseEntity<>(flairsDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<FlairDTO> getFlair(@PathVariable Integer id) {
+    @GetMapping(value = "/{name}")
+    public ResponseEntity<FlairDTO> getFlair(@PathVariable String name) {
 
-        Flair flair = flairService.findOne(id);
+        Flair flair = flairService.findOne(name);
 
         if (flair == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -63,7 +63,7 @@ public class FlairController {
     @PutMapping(consumes = "application/json")
     public ResponseEntity<FlairDTO> updateFlair(@RequestBody FlairDTO flairDTO) {
 
-        Flair flair = flairService.findOne(flairDTO.getId());
+        Flair flair = flairService.findOne(flairDTO.getName());
 
         if (flair == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -76,22 +76,22 @@ public class FlairController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteFlair(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteFlair(@PathVariable String name) {
 
-        Flair flair = flairService.findOne(id);
+        Flair flair = flairService.findOne(name);
 
         if (flair != null) {
-            flairService.remove(id);
+            flairService.remove(name);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping(value = "/{flairId}/posts")
-    public ResponseEntity<List<PostDTO>> getFlairPosts(@PathVariable Integer flairId) {
+    @GetMapping(value = "/{flairName}/posts")
+    public ResponseEntity<List<PostDTO>> getFlairPosts(@PathVariable String flairName) {
 
-        Flair flair = flairService.findOneWithPosts(flairId);
+        Flair flair = flairService.findOneWithPosts(flairName);
 
         if (flair == null) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
@@ -104,7 +104,6 @@ public class FlairController {
             PostDTO postDTO = new PostDTO();
             postDTO.setId(p.getId());
             postDTO.setTitle(p.getTitle());
-            postDTO.setImagePath(p.getImagePath());
             postDTO.setUser(new UserDTO(p.getUser()));
             postDTO.setFlair(new FlairDTO(flair));
             postDTO.setCommunity(new CommunityDTO(p.getCommunity()));

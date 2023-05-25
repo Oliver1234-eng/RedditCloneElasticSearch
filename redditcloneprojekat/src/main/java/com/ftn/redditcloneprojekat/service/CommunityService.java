@@ -17,8 +17,8 @@ public class CommunityService {
     @Autowired
     private CommunityRepository communityRepository;
 
-    public Community findOne(Integer id) {
-        return communityRepository.findById(id).orElseGet(null);
+    public Community findOne(String name) {
+        return communityRepository.findById(name).orElseGet(null);
     }
 
     public List<Community> findAll() {
@@ -33,12 +33,12 @@ public class CommunityService {
         return communityRepository.save(community);
     }
 
-    public void remove(Integer id) {
-        communityRepository.deleteById(id);
+    public void remove(String name) {
+        communityRepository.deleteById(name);
     }
 
-    public Community findOneWithPosts(Integer communityId) {
-        return communityRepository.findOneWithPosts(communityId);
+    public Community findOneWithPosts(String communityName) {
+        return communityRepository.findOneWithPosts(communityName);
     }
 
 }

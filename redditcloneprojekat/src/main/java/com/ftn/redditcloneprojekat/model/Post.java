@@ -24,20 +24,16 @@ public class Post {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @NotBlank(message = "Image path cannot be null")
-    @Column(name = "imagePath", nullable = false)
-    private String imagePath;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_username")
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "flair_id")
+    @JoinColumn(name = "flair_name")
     private Flair flair;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "community_id")
+    @JoinColumn(name = "community_name")
     private Community community;
 
     @OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -78,14 +74,6 @@ public class Post {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 
     public User getUser() {
@@ -207,7 +195,6 @@ public class Post {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
-                ", imagePath='" + imagePath + '\'' +
                 '}';
     }
 }

@@ -14,9 +14,6 @@ import java.util.Set;
 @Table(name = "user")
 public class User {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @Id
     @NotBlank(message = "Username cannot be null")
     @Column(name = "username", nullable = false, unique = true)
@@ -29,14 +26,6 @@ public class User {
     @NotBlank(message = "Email cannot be null")
     @Column(name = "email", nullable = false)
     private String email;
-
-    @NotBlank(message = "Avatar cannot be null")
-    @Column(name = "avatar", nullable = false)
-    private String avatar;
-
-    @AssertFalse
-    @Column(name = "isBanned", nullable = false)
-    private Boolean isBanned;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -64,22 +53,11 @@ public class User {
         super();
     }
 
-    public User(Integer id, String username, String password, String email, String avatar, LocalDate registrationDate, Boolean isBanned, Roles role) {
-        this.id = id;
+    public User(String username, String password, String email, Roles role) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.avatar = avatar;
-        this.isBanned = isBanned;
         this.role = role;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -104,22 +82,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public Boolean getBanned() {
-        return isBanned;
-    }
-
-    public void setBanned(Boolean banned) {
-        isBanned = banned;
     }
 
     public Roles getRole() {
@@ -261,12 +223,9 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", avatar='" + avatar + '\'' +
-                ", isBanned=" + isBanned +
                 '}';
     }
 }

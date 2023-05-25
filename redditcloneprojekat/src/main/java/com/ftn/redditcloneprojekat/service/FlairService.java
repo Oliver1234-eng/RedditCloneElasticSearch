@@ -17,8 +17,8 @@ public class FlairService {
     @Autowired
     private FlairRepository flairRepository;
 
-    public Flair findOne(Integer id) {
-        return flairRepository.findById(id).orElseGet(null);
+    public Flair findOne(String name) {
+        return flairRepository.findById(name).orElseGet(null);
     }
 
     public List<Flair> findAll() {
@@ -33,11 +33,11 @@ public class FlairService {
         return flairRepository.save(flair);
     }
 
-    public void remove(Integer id) {
-        flairRepository.deleteById(id);
+    public void remove(String name) {
+        flairRepository.deleteById(name);
     }
 
-    public Flair findOneWithPosts(Integer flairId) {
-        return flairRepository.findOneWithPosts(flairId);
+    public Flair findOneWithPosts(String flairName) {
+        return flairRepository.findOneWithPosts(flairName);
     }
 }

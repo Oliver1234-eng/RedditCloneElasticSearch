@@ -2,6 +2,8 @@ package com.ftn.redditcloneprojekat.controller;
 
 import com.ftn.redditcloneprojekat.dto.*;
 import com.ftn.redditcloneprojekat.model.*;
+import com.ftn.redditcloneprojekat.repository.CommunityRepository;
+import com.ftn.redditcloneprojekat.repository.FlairRepository;
 import com.ftn.redditcloneprojekat.security.TokenUtils;
 import com.ftn.redditcloneprojekat.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -30,6 +33,12 @@ public class PostController {
 
     @Autowired
     private CommunityService communityService;
+
+    @Autowired
+    private CommunityRepository communityRepository;
+
+    @Autowired
+    private FlairRepository flairRepository;
 
     @Autowired
     TokenUtils tokenUtils;
@@ -70,8 +79,12 @@ public class PostController {
         String currentUserName = authentication.getName();
 
         User user = userService.findOneWithPostsToken(currentUserName);
-        Flair flair = flairService.findOneWithPosts(postDTO.getFlair().getId());
-        Community community = communityService.findOneWithPosts(postDTO.getCommunity().getId());
+        Optional<Flair> flairOptional = flairRepository.findById(postDTO.getFlair().getName());
+        Flair flair = flairOptional.orElseThrow(() -> new RuntimeException("Flair with name " + postDTO.getFlair().getName() + " does not exist"));
+        Optional<Community> communityOptional = communityRepository.findById(postDTO.getCommunity().getName());
+        Community community = communityOptional.orElseThrow(() -> new RuntimeException("Community with name " + postDTO.getCommunity().getName() + " does not exist"));
+//        Flair flair = flairService.findOneWithPosts(postDTO.getFlair().getId());
+//        Community community = communityService.findOneWithPosts(postDTO.getCommunity().getId());
 
         if (user == null || flair == null || community == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -80,8 +93,9 @@ public class PostController {
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
         post.setText(postDTO.getText());
-        post.setImagePath(postDTO.getImagePath());
         post.setUser(user);
+//        post.setFlair(flairRepository.getOne(postDTO.getFlair().getId()));
+//        post.setCommunity(communityRepository.getOne(postDTO.getCommunity().getId()));
         post.setFlair(flair);
         post.setCommunity(community);
         user.addPost(post);
@@ -132,7 +146,6 @@ public class PostController {
 
         post.setTitle(postDTO.getTitle());
         post.setText(postDTO.getText());
-        post.setImagePath(postDTO.getImagePath());
 
         post = postService.save(post);
         return new ResponseEntity<>(new PostDTO(post), HttpStatus.OK);
@@ -218,7 +231,6 @@ public class PostController {
             CommentDTO commentDTO = new CommentDTO();
             commentDTO.setId(c.getId());
             commentDTO.setText(c.getText());
-            commentDTO.setDeleted(c.getDeleted());
             commentDTO.setUser(new UserDTO(c.getUser()));
             commentDTO.setPost(new PostDTO(post));
 

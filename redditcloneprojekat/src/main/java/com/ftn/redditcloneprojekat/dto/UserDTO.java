@@ -6,8 +6,6 @@ import javax.validation.constraints.NotBlank;
 
 public class UserDTO {
 
-    private Integer id;
-
     @NotBlank
     private String username;
 
@@ -15,34 +13,20 @@ public class UserDTO {
     private String password;
 
     private String email;
-    private String avatar;
-    private Boolean isBanned;
 
     public UserDTO() {
 
     }
 
     public UserDTO(User user) {
-        this(user.getId(), user.getUsername(), user.getPassword(), user.getEmail(),
-                user.getAvatar(), user.getBanned());
+        this(user.getUsername(), user.getPassword(), user.getEmail());
     }
 
-    public UserDTO(Integer id, String username, String password, String email, String avatar, Boolean isBanned) {
+    public UserDTO(String username, String password, String email) {
         super();
-        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.avatar = avatar;
-        this.isBanned = isBanned;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getUsername() {
@@ -67,21 +51,5 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    public Boolean getBanned() {
-        return isBanned;
-    }
-
-    public void setBanned(Boolean banned) {
-        isBanned = banned;
     }
 }

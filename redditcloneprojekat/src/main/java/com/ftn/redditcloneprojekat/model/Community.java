@@ -11,11 +11,8 @@ import java.util.Set;
 public class Community {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @NotBlank(message = "Name cannot be null")
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @NotBlank(message = "Description cannot be null")
@@ -25,10 +22,6 @@ public class Community {
     @NotBlank(message = "Rules cannot be null")
     @Column(name = "rules", nullable = false)
     private String rules;
-
-    @AssertFalse
-    @Column(name = "isSuspended", nullable = false)
-    private Boolean isSuspended;
 
     @NotBlank(message = "Suspended reason cannot be null")
     @Column(name = "suspendedReason", nullable = false)
@@ -43,14 +36,6 @@ public class Community {
 
     public Community() {
 
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -75,14 +60,6 @@ public class Community {
 
     public void setRules(String rules) {
         this.rules = rules;
-    }
-
-    public Boolean getSuspended() {
-        return isSuspended;
-    }
-
-    public void setSuspended(Boolean suspended) {
-        isSuspended = suspended;
     }
 
     public String getSuspendedReason() {
@@ -128,7 +105,7 @@ public class Community {
             return false;
         }
         Community c = (Community) o;
-        return id != null && id.equals(c.getId());
+        return name != null && name.equals(c.getName());
     }
 
     @Override
@@ -139,11 +116,9 @@ public class Community {
     @Override
     public String toString() {
         return "Community{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", rules='" + rules + '\'' +
-                ", isSuspended=" + isSuspended +
                 ", suspendedReason='" + suspendedReason + '\'' +
                 '}';
     }

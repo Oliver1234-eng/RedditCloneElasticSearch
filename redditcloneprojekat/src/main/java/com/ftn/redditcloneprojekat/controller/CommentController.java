@@ -73,7 +73,6 @@ public class CommentController {
 
         Comment comment = new Comment();
         comment.setText(commentDTO.getText());
-        comment.setDeleted(commentDTO.getDeleted());
         comment.setUser(user);
         comment.setPost(post);
         post.addComment(comment);
@@ -118,7 +117,6 @@ public class CommentController {
         }
 
         comment.setText(commentDTO.getText());
-        comment.setDeleted(commentDTO.getDeleted());
 
         comment = commentService.save(comment);
         return new ResponseEntity<>(new CommentDTO(comment), HttpStatus.OK);

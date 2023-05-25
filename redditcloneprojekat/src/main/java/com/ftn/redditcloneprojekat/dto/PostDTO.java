@@ -13,7 +13,6 @@ public class PostDTO {
     private Integer id;
     private String title;
     private String text;
-    private String imagePath;
     private UserDTO user;
     private FlairDTO flair;
     private CommunityDTO community;
@@ -34,10 +33,9 @@ public class PostDTO {
         id = post.getId();
         title = post.getTitle();
         text = post.getText();
-        imagePath = post.getImagePath();
         user = new UserDTO(post.getUser());
-        flair = new FlairDTO(post.getFlair().getId());
-        community = new CommunityDTO(post.getCommunity().getId());
+        flair = new FlairDTO(post.getFlair().getName());
+        community = new CommunityDTO(post.getCommunity().getName());
     }
 
     public PostDTO(Integer id) {
@@ -66,14 +64,6 @@ public class PostDTO {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 
     public UserDTO getUser() {

@@ -20,10 +20,6 @@ public class Comment {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @AssertFalse
-    @Column(name = "isDeleted", nullable = false)
-    private Boolean isDeleted;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_username")
     private User user;
@@ -56,14 +52,6 @@ public class Comment {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 
     public User getUser() {
@@ -138,7 +126,6 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", text='" + text + '\'' +
-                ", isDeleted=" + isDeleted +
                 '}';
     }
 }

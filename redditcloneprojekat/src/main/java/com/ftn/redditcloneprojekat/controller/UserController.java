@@ -140,8 +140,6 @@ public class UserController {
         user.setPassword(securityProperties.createPasswordEncoder().encode(userDTO.getPassword()));
         //user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
-        user.setAvatar(userDTO.getAvatar());
-        user.setBanned(userDTO.getBanned());
 
         user = userService.save(user);
         return new ResponseEntity<>(new UserDTO(user), HttpStatus.OK);
@@ -249,11 +247,9 @@ public class UserController {
 
         for (Community c: communities) {
             CommunityDTO communityDTO = new CommunityDTO();
-            communityDTO.setId(c.getId());
             communityDTO.setName(c.getName());
             communityDTO.setDescription(c.getDescription());
             communityDTO.setRules(c.getRules());
-            communityDTO.setSuspended(c.getSuspended());
             communityDTO.setSuspendedReason(c.getSuspendedReason());
             communityDTO.setUser(new UserDTO(c.getUser()));
 
@@ -330,7 +326,6 @@ public class UserController {
             PostDTO postDTO = new PostDTO();
             postDTO.setId(p.getId());
             postDTO.setTitle(p.getTitle());
-            postDTO.setImagePath(p.getImagePath());
             postDTO.setUser(new UserDTO(p.getUser()));
             postDTO.setFlair(new FlairDTO(p.getFlair()));
             postDTO.setCommunity(new CommunityDTO(p.getCommunity()));
@@ -357,7 +352,6 @@ public class UserController {
             CommentDTO commentDTO = new CommentDTO();
             commentDTO.setId(c.getId());
             commentDTO.setText(c.getText());
-            commentDTO.setDeleted(c.getDeleted());
             commentDTO.setUser(new UserDTO(c.getUser()));
             commentDTO.setPost(new PostDTO(c.getPost()));
 

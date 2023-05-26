@@ -1,0 +1,19 @@
+{
+  "analysis": {
+    "analyzer": {
+      "fuzzyAnalyzer": {
+        "type": "custom",
+        "char_filter": ["html_strip"],
+        "tokenizer": "standard",
+        "filter": ["lowercase", "stop", "fuzzy"]
+      }
+    },
+    "filter": {
+      "fuzzy": {
+        "type": "fuzzy",
+        "max_edits": 2,
+        "prefix_length": 0
+      }
+    }
+  }
+}

@@ -2,10 +2,7 @@ package com.ftn.redditcloneprojekat.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.elasticsearch.annotations.*;
 
 
 @Setter
@@ -20,7 +17,7 @@ public class CommunityDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String name;
 
     @Field(type = FieldType.Text)
@@ -29,13 +26,13 @@ public class CommunityDocument {
     @Field(type = FieldType.Keyword)
     private String keywords;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String rules;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String suspendedReason;
 
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text)
     private String user;
 
     @Field(type = FieldType.Integer)

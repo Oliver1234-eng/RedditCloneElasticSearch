@@ -1,9 +1,10 @@
 package com.ftn.redditcloneprojekat.controller;
 
-import com.ftn.redditcloneprojekat.dto.PostDocumentDTO;
-import com.ftn.redditcloneprojekat.dto.PostDocumentResponseDTO;
-import com.ftn.redditcloneprojekat.dto.PostDocumentTextDTO;
+import com.ftn.redditcloneprojekat.dto.*;
+import com.ftn.redditcloneprojekat.model.CommunityDocument;
+import com.ftn.redditcloneprojekat.model.PostDocument;
 import com.ftn.redditcloneprojekat.service.PostDocumentService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -29,29 +30,40 @@ public class PostDocumentController {
         postDocumentService.reindex();
     }
 
-    @GetMapping("/title/{title}")
-    public List<PostDocumentResponseDTO> findPostDocumentsByTitle(@PathVariable String title){
-        return postDocumentService.findPostDocumentsByTitle(title);
+    @PostMapping("/title")
+    public List<PostDocumentResponseDTO> findPostDocumentsByTitle(@RequestBody PostDocumentTitleDTO postDocumentTitleDTO){
+        return postDocumentService.findPostDocumentsByTitle(postDocumentTitleDTO.getTitle());
     }
 
-    @GetMapping("/text")
+    @PostMapping("/text")
     public List<PostDocumentResponseDTO> findPostDocumentsByText(@RequestBody PostDocumentTextDTO postDocumentTextDTO){
         return postDocumentService.findPostDocumentsByText(postDocumentTextDTO.getText());
     }
 
-    @GetMapping("/user/{user}")
-    public List<PostDocumentResponseDTO> findPostDocumentsByUser(@PathVariable String user){
-        return postDocumentService.findPostDocumentsByUser(user);
+    @PostMapping("/user")
+    public List<PostDocumentResponseDTO> findPostDocumentsByUser(@RequestBody PostDocumentUserDTO postDocumentUserDTO){
+        return postDocumentService.findPostDocumentsByUser(postDocumentUserDTO.getUser());
     }
 
-    @GetMapping("/flair/{flair}")
-    public List<PostDocumentResponseDTO> findPostDocumentsByFlair(@PathVariable String flair){
-        return postDocumentService.findPostDocumentsByFlair(flair);
+    @PostMapping("/flair")
+    public List<PostDocumentResponseDTO> findPostDocumentsByFlair(@RequestBody PostDocumentFlairDTO postDocumentFlairDTO){
+        return postDocumentService.findPostDocumentsByFlair(postDocumentFlairDTO.getFlair());
     }
 
-    @GetMapping("/community/{community}")
-    public List<PostDocumentResponseDTO> findPostDocumentsByCommunity(@PathVariable String community){
-        return postDocumentService.findPostDocumentsByCommunity(community);
+    @PostMapping("/community")
+    public List<PostDocumentResponseDTO> findPostDocumentsByCommunity(@RequestBody PostDocumentCommunityDTO postDocumentCommunityDTO){
+        return postDocumentService.findPostDocumentsByCommunity(postDocumentCommunityDTO.getCommunity());
+    }
+
+    @GetMapping("/searchTitle")
+    public ResponseEntity<List<PostDocumentResponseDTO>> searchPostsByTitle(@RequestParam("title") String title) {
+        List<PostDocumentResponseDTO> postDocuments = postDocumentService.searchPostsByTitle(title);
+        return ResponseEntity.ok(postDocuments);
+    }
+
+    @GetMapping("/searchText")
+    public List<PostDocument> searchPostsByTextPhrase(@RequestParam String searchText) {
+        return postDocumentService.searchPostsByTextPhraseService(searchText);
     }
 
     @GetMapping("/commentCount/{commentCount1}/to/{commentCount2}")
@@ -59,9 +71,29 @@ public class PostDocumentController {
         return postDocumentService.findPostDocumentsByCommentCount(commentCount1, commentCount2);
     }
 
+    @GetMapping("/commentCountGreaterThan/{commentCount}")
+    public List<PostDocumentResponseDTO> findPostDocumentsByCommentCountGreaterThan(@PathVariable int commentCount){
+        return postDocumentService.findPostDocumentsByCommentCountGreaterThan(commentCount);
+    }
+
+    @GetMapping("/commentCountLessThan/{commentCount}")
+    public List<PostDocumentResponseDTO> findPostDocumentsByCommentCountLessThan(@PathVariable int commentCount){
+        return postDocumentService.findPostDocumentsByCommentCountLessThan(commentCount);
+    }
+
     @GetMapping("/karma/{karma1}/to/{karma2}")
     public List<PostDocumentResponseDTO> findPostDocumentsByKarma(@PathVariable int karma1, @PathVariable int karma2){
         return postDocumentService.findPostDocumentsByKarma(karma1, karma2);
+    }
+
+    @GetMapping("/karmaGreaterThan/{karma}")
+    public List<PostDocumentResponseDTO> findPostDocumentsByKarmaGreaterThan(@PathVariable int karma){
+        return postDocumentService.findPostDocumentsByKarmaGreaterThan(karma);
+    }
+
+    @GetMapping("/karmaLessThan/{karma}")
+    public List<PostDocumentResponseDTO> findPostDocumentsByKarmaLessThan(@PathVariable int karma){
+        return postDocumentService.findPostDocumentsByKarmaLessThan(karma);
     }
 
     @GetMapping("/and/flair/{flair}/user/{user}")

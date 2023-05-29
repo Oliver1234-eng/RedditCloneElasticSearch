@@ -12,36 +12,19 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(indexName = "posts")
+@Document(indexName = "comments")
 @Setting(settingPath = "/analyzers/serbianAnalyzer.json")
-public class PostDocument {
+public class CommentDocument {
 
     @Id
     private String id;
 
     @Field(type = FieldType.Text)
-    private String title;
-
-    @Field(type = FieldType.Text)
     private String text;
-
-    @Field(type = FieldType.Keyword)
-    private String keywords;
 
     @Field(type = FieldType.Text)
     private String user;
 
-    @Field(type = FieldType.Text)
-    private String flair;
-
-    @Field(type = FieldType.Text)
-    private String community;
-
     @Field(type = FieldType.Integer)
-    private int commentCount;
-
-    @Field(type = FieldType.Integer)
-    private int karma;
-
-    private String filename;
+    private int postId;
 }

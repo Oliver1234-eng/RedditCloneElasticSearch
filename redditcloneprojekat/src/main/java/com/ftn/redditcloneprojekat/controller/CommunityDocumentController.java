@@ -1,9 +1,9 @@
 package com.ftn.redditcloneprojekat.controller;
 
-import com.ftn.redditcloneprojekat.dto.CommunityDocumentDTO;
-import com.ftn.redditcloneprojekat.dto.CommunityDocumentDescriptionDTO;
-import com.ftn.redditcloneprojekat.dto.CommunityDocumentResponseDTO;
+import com.ftn.redditcloneprojekat.dto.*;
+import com.ftn.redditcloneprojekat.model.CommunityDocument;
 import com.ftn.redditcloneprojekat.service.CommunityDocumentService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -29,29 +29,40 @@ public class CommunityDocumentController {
         communityDocumentService.reindex();
     }
 
-    @GetMapping("/name/{name}")
-    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByName(@PathVariable String name){
-        return communityDocumentService.findCommunityDocumentsByName(name);
+    @PostMapping("/name")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByName(@RequestBody CommunityDocumentNameDTO communityDocumentNameDTO){
+        return communityDocumentService.findCommunityDocumentsByName(communityDocumentNameDTO.getName());
     }
 
-    @GetMapping("/description")
+    @PostMapping("/description")
     public List<CommunityDocumentResponseDTO> findCommunityDocumentsByDescription(@RequestBody CommunityDocumentDescriptionDTO communityDocumentDescriptionDTO){
         return communityDocumentService.findCommunityDocumentsByDescription(communityDocumentDescriptionDTO.getDescription());
     }
 
-    @GetMapping("/rules/{rules}")
-    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByRules(@PathVariable String rules){
-        return communityDocumentService.findCommunityDocumentsByRules(rules);
+    @PostMapping("/rules")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByRules(@RequestBody CommunityDocumentRulesDTO communityDocumentRulesDTO){
+        return communityDocumentService.findCommunityDocumentsByRules(communityDocumentRulesDTO.getRules());
     }
 
-    @GetMapping("/suspendedReason/{suspendedReason}")
-    public List<CommunityDocumentResponseDTO> findCommunityDocumentsBySuspendedReason(@PathVariable String suspendedReason){
-        return communityDocumentService.findCommunityDocumentsBySuspendedReason(suspendedReason);
+    @PostMapping("/suspendedReason")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsBySuspendedReason(@RequestBody CommunityDocumentSuspendedReasonDTO communityDocumentSuspendedReasonDTO){
+        return communityDocumentService.findCommunityDocumentsBySuspendedReason(communityDocumentSuspendedReasonDTO.getSuspendedReason());
     }
 
-    @GetMapping("/user/{user}")
-    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByUser(@PathVariable String user){
-        return communityDocumentService.findCommunityDocumentsByUser(user);
+    @PostMapping("/user")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByUser(@RequestBody CommunityDocumentUserDTO communityDocumentUserDTO){
+        return communityDocumentService.findCommunityDocumentsByUser(communityDocumentUserDTO.getUser());
+    }
+
+    @GetMapping("/searchName")
+    public ResponseEntity<List<CommunityDocumentResponseDTO>> searchCommunitiesByName(@RequestParam("name") String name) {
+        List<CommunityDocumentResponseDTO> communityDocuments = communityDocumentService.searchCommunitiesByName(name);
+        return ResponseEntity.ok(communityDocuments);
+    }
+
+    @GetMapping("/searchDescription")
+    public List<CommunityDocument> searchCommunitiesByDescriptionPhrase(@RequestParam String searchDescription) {
+        return communityDocumentService.searchCommunitiesByDescriptionPhraseService(searchDescription);
     }
 
     @GetMapping("/postCount/{postCount1}/to/{postCount2}")
@@ -59,9 +70,29 @@ public class CommunityDocumentController {
         return communityDocumentService.findCommunityDocumentsByPostCount(postCount1, postCount2);
     }
 
+    @GetMapping("/postCountGreaterThan/{postCount}")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByPostCountGreaterThan(@PathVariable int postCount){
+        return communityDocumentService.findCommunityDocumentsByPostCountGreaterThan(postCount);
+    }
+
+    @GetMapping("/postCountLessThan/{postCount}")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByPostCountLessThan(@PathVariable int postCount){
+        return communityDocumentService.findCommunityDocumentsByPostCountLessThan(postCount);
+    }
+
     @GetMapping("/averageKarma/{averageKarma1}/to/{averageKarma2}")
     public List<CommunityDocumentResponseDTO> findCommunityDocumentsByAverageKarma(@PathVariable int averageKarma1, @PathVariable int averageKarma2){
         return communityDocumentService.findCommunityDocumentsByAverageKarma(averageKarma1, averageKarma2);
+    }
+
+    @GetMapping("/averageKarmaGreaterThan/{averageKarma}")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByAverageKarmaGreaterThan(@PathVariable int averageKarma){
+        return communityDocumentService.findCommunityDocumentsByAverageKarmaGreaterThan(averageKarma);
+    }
+
+    @GetMapping("/averageKarmaLessThan/{averageKarma}")
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByAverageKarmaLessThan(@PathVariable int averageKarma){
+        return communityDocumentService.findCommunityDocumentsByAverageKarmaLessThan(averageKarma);
     }
 
     @GetMapping("/and/name/{name}/user/{user}")

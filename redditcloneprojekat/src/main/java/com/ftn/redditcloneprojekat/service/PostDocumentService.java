@@ -1,13 +1,24 @@
 package com.ftn.redditcloneprojekat.service;
 
+import com.ftn.redditcloneprojekat.dto.CommunityDocumentResponseDTO;
 import com.ftn.redditcloneprojekat.dto.PostDocumentDTO;
 import com.ftn.redditcloneprojekat.dto.PostDocumentResponseDTO;
+import com.ftn.redditcloneprojekat.dto.mapper.CommunityDocumentMapper;
 import com.ftn.redditcloneprojekat.dto.mapper.PostDocumentMapper;
 import com.ftn.redditcloneprojekat.lucene.indexing.handlers.DocumentHandler;
 import com.ftn.redditcloneprojekat.lucene.indexing.handlers.PDFHandler;
+import com.ftn.redditcloneprojekat.model.CommunityDocument;
 import com.ftn.redditcloneprojekat.model.PostDocument;
 import com.ftn.redditcloneprojekat.repository.PostDocumentRepository;
+import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +29,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.elasticsearch.index.query.QueryBuilders.fuzzyQuery;
 
 @Service
 public class PostDocumentService {
@@ -27,8 +41,11 @@ public class PostDocumentService {
 
     private final PostDocumentRepository postDocumentRepository;
 
-    public PostDocumentService(PostDocumentRepository postDocumentRepository) {
+    private ElasticsearchOperations elasticsearchOperations;
+
+    public PostDocumentService(PostDocumentRepository postDocumentRepository, ElasticsearchOperations elasticsearchOperations) {
         this.postDocumentRepository = postDocumentRepository;
+        this.elasticsearchOperations = elasticsearchOperations;
     }
 
     public void index(PostDocumentDTO postDocumentDTO){
@@ -69,8 +86,28 @@ public class PostDocumentService {
         return mapPostDocumentsToPostDocumentsDTO(postDocuments);
     }
 
+    public List<PostDocumentResponseDTO> findPostDocumentsByCommentCountGreaterThan(int commentCount){
+        List<PostDocument> postDocuments = postDocumentRepository.findAllByCommentCountGreaterThan(commentCount);
+        return mapPostDocumentsToPostDocumentsDTO(postDocuments);
+    }
+
+    public List<PostDocumentResponseDTO> findPostDocumentsByCommentCountLessThan(int commentCount){
+        List<PostDocument> postDocuments = postDocumentRepository.findAllByCommentCountLessThan(commentCount);
+        return mapPostDocumentsToPostDocumentsDTO(postDocuments);
+    }
+
     public List<PostDocumentResponseDTO> findPostDocumentsByKarma(int karma1, int karma2){
         List<PostDocument> postDocuments = postDocumentRepository.findAllByKarmaGreaterThanAndKarmaLessThan(karma1, karma2);
+        return mapPostDocumentsToPostDocumentsDTO(postDocuments);
+    }
+
+    public List<PostDocumentResponseDTO> findPostDocumentsByKarmaGreaterThan(int karma){
+        List<PostDocument> postDocuments = postDocumentRepository.findAllByKarmaGreaterThan(karma);
+        return mapPostDocumentsToPostDocumentsDTO(postDocuments);
+    }
+
+    public List<PostDocumentResponseDTO> findPostDocumentsByKarmaLessThan(int karma){
+        List<PostDocument> postDocuments = postDocumentRepository.findAllByKarmaLessThan(karma);
         return mapPostDocumentsToPostDocumentsDTO(postDocuments);
     }
 
@@ -82,6 +119,32 @@ public class PostDocumentService {
     public List<PostDocumentResponseDTO> findPostDocumentsByFlairOrUser(String flair, String user){
         List<PostDocument> postDocuments = postDocumentRepository.findAllByFlairOrUser(flair, user);
         return mapPostDocumentsToPostDocumentsDTO(postDocuments);
+    }
+
+    public List<PostDocumentResponseDTO> searchPostsByTitle(String searchTitle) {
+        Query searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(fuzzyQuery("title", searchTitle).fuzziness(Fuzziness.TWO))
+                .build();
+
+        SearchHits<PostDocument> searchHits = elasticsearchOperations.search(searchQuery, PostDocument.class);
+        List<PostDocument> postsDocument = searchHits.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+
+        return postsDocument.stream()
+                .map(PostDocumentMapper::mapResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostDocument> searchPostsByTextPhraseImpl(String searchText) {
+        Query query = new StringQuery(QueryBuilders.matchPhraseQuery("text", searchText).toString());
+        return elasticsearchOperations.search(query, PostDocument.class).stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostDocument> searchPostsByTextPhraseService(String searchText) {
+        return searchPostsByTextPhraseImpl(searchText);
     }
 
     private List<PostDocumentResponseDTO> mapPostDocumentsToPostDocumentsDTO(List<PostDocument> postDocuments){

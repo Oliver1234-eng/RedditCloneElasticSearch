@@ -2,7 +2,6 @@ package com.ftn.redditcloneprojekat.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -16,5 +15,4 @@ public class CommunityDocumentResponseDTO {
     private String user;
     private int postCount;
     private int averageKarma;
-    //private MultipartFile[] files;
 }

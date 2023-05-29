@@ -7,7 +7,17 @@ import com.ftn.redditcloneprojekat.lucene.indexing.handlers.DocumentHandler;
 import com.ftn.redditcloneprojekat.lucene.indexing.handlers.PDFHandler;
 import com.ftn.redditcloneprojekat.model.CommunityDocument;
 import com.ftn.redditcloneprojekat.repository.CommunityDocumentRepository;
+import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +28,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.elasticsearch.index.query.QueryBuilders.fuzzyQuery;
 
 @Service
 public class CommunityDocumentService {
@@ -27,8 +40,11 @@ public class CommunityDocumentService {
 
     private final CommunityDocumentRepository communityDocumentRepository;
 
-    public CommunityDocumentService(CommunityDocumentRepository communityDocumentRepository) {
+    private ElasticsearchOperations elasticsearchOperations;
+
+    public CommunityDocumentService(CommunityDocumentRepository communityDocumentRepository, ElasticsearchOperations elasticsearchOperations) {
         this.communityDocumentRepository = communityDocumentRepository;
+        this.elasticsearchOperations = elasticsearchOperations;
     }
 
     public void index(CommunityDocumentDTO communityDocumentDTO){
@@ -69,8 +85,28 @@ public class CommunityDocumentService {
         return mapCommunityDocumentsToCommunityDocumentsDTO(communityDocuments);
     }
 
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByPostCountGreaterThan(int postCount){
+        List<CommunityDocument> communityDocuments = communityDocumentRepository.findAllByPostCountGreaterThan(postCount);
+        return mapCommunityDocumentsToCommunityDocumentsDTO(communityDocuments);
+    }
+
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByPostCountLessThan(int postCount){
+        List<CommunityDocument> communityDocuments = communityDocumentRepository.findAllByPostCountLessThan(postCount);
+        return mapCommunityDocumentsToCommunityDocumentsDTO(communityDocuments);
+    }
+
     public List<CommunityDocumentResponseDTO> findCommunityDocumentsByAverageKarma(int averageKarma1, int averageKarma2){
         List<CommunityDocument> communityDocuments = communityDocumentRepository.findAllByAverageKarmaGreaterThanAndAverageKarmaLessThan(averageKarma1, averageKarma2);
+        return mapCommunityDocumentsToCommunityDocumentsDTO(communityDocuments);
+    }
+
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByAverageKarmaGreaterThan(int averageKarma){
+        List<CommunityDocument> communityDocuments = communityDocumentRepository.findAllByAverageKarmaGreaterThan(averageKarma);
+        return mapCommunityDocumentsToCommunityDocumentsDTO(communityDocuments);
+    }
+
+    public List<CommunityDocumentResponseDTO> findCommunityDocumentsByAverageKarmaLessThan(int averageKarma){
+        List<CommunityDocument> communityDocuments = communityDocumentRepository.findAllByAverageKarmaLessThan(averageKarma);
         return mapCommunityDocumentsToCommunityDocumentsDTO(communityDocuments);
     }
 
@@ -82,6 +118,32 @@ public class CommunityDocumentService {
     public List<CommunityDocumentResponseDTO> findCommunityDocumentsByNameOrUser(String name, String user){
         List<CommunityDocument> communityDocuments = communityDocumentRepository.findAllByNameOrUser(name, user);
         return mapCommunityDocumentsToCommunityDocumentsDTO(communityDocuments);
+    }
+
+    public List<CommunityDocumentResponseDTO> searchCommunitiesByName(String searchName) {
+        Query searchQuery = new NativeSearchQueryBuilder()
+                .withQuery(fuzzyQuery("name", searchName).fuzziness(Fuzziness.TWO))
+                .build();
+
+        SearchHits<CommunityDocument> searchHits = elasticsearchOperations.search(searchQuery, CommunityDocument.class);
+        List<CommunityDocument> communitiesDocument = searchHits.stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+
+        return communitiesDocument.stream()
+                .map(CommunityDocumentMapper::mapResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<CommunityDocument> searchCommunitiesByDescriptionPhraseImpl(String searchDescription) {
+        Query query = new StringQuery(QueryBuilders.matchPhraseQuery("description", searchDescription).toString());
+        return elasticsearchOperations.search(query, CommunityDocument.class).stream()
+                .map(SearchHit::getContent)
+                .collect(Collectors.toList());
+    }
+
+    public List<CommunityDocument> searchCommunitiesByDescriptionPhraseService(String searchDescription) {
+        return searchCommunitiesByDescriptionPhraseImpl(searchDescription);
     }
 
     private List<CommunityDocumentResponseDTO> mapCommunityDocumentsToCommunityDocumentsDTO(List<CommunityDocument> communityDocuments){

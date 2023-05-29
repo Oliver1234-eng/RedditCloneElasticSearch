@@ -5,14 +5,10 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PostDocumentResponseDTO {
+public class CommentDocumentResponseDTO {
 
     private String id;
-    private String title;
     private String text;
     private String user;
-    private String flair;
-    private String community;
-    private int commentCount;
-    private int karma;
+    private int postId;
 }
